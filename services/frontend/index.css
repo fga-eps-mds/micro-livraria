@@ -5,6 +5,10 @@ body {
         sans-serif;
 }
 
+.hero-body {
+    background-color: #193e7a;
+}
+
 .hero-body .container {
     max-width: 700px;
 }
@@ -33,7 +37,7 @@ body {
     font-size: 8rem;
     padding-top: 2rem;
     padding-bottom: 2rem;
-    color: #209cee;
+    color: #008940;
 }
 
 .card-content .content {

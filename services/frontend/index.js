@@ -36,12 +36,12 @@ function newBook(book) {
 }
 
 function calculateShipping(id, cep) {
-    fetch('http://localhost:3000/shipping/' + cep)
-        .then((data) => {
-            if (data.ok) {
-                return data.json();
+    fetch('http://localhost:8000/api/rate/')
+        .then((response) => {
+            if (response.ok) {
+                return response.json();
             }
-            throw data.statusText;
+            throw response.statusText;
         })
         .then((data) => {
             swal('Frete', `O frete é: R$${data.value.toFixed(2)}`, 'success');
@@ -55,7 +55,7 @@ function calculateShipping(id, cep) {
 document.addEventListener('DOMContentLoaded', function () {
     const books = document.querySelector('.books');
 
-    fetch('http://localhost:3000/products')
+    fetch('http://localhost:8001/api/products')
         .then((data) => {
             if (data.ok) {
                 return data.json();
