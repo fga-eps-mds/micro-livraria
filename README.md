@@ -28,7 +28,7 @@ A micro-livraria possui três microsserviços:
 -   Shipping: microserviço para cálculo de frete.
 -   Inventory: microserviço para controle do estoque da livraria.
 
-Os quatro microsserviços estão implementados em **Python**, usando o Django REST Framework (DRF) para execução dos serviços no back-end.
+Os microsserviços estão implementados em **Python** e **javaScript**, usando o Django REST Framework (DRF), em python para execução dos serviços no back-end e JavaScript, Css e Html para execucao do Front-end.
 
 No entanto, **você conseguirá completar as tarefas práticas mesmo se nunca programou em Python**. O motivo é que o nosso roteiro já inclui os trechos de código que devem ser copiados para o sistema.
 
@@ -59,10 +59,10 @@ A seguir vamos descrever a sequência de passos para você executar o sistema lo
 2. Vá para o terminal do seu sistema operacional e clone o projeto (lembre-se de incluir o seu usuário GitHub na URL antes de executar)
 
     ```bash
-    git clone https://github.com/<SEU USUÁRIO>/micro-livraria.git
+    git clone https://github.com/<SEU_USUÁRIO>/micro-livraria.git
     ```
 
-3. É também necessário ter o `Python` instalado na sua máquina. Se você não tem, siga as instruções para instalação contidas nessa [página](https://www.python.org/downloads/).
+3. É também necessário ter o `Python` e o `pip` instalado na sua máquina. Se você não tem, siga as instruções para instalação contidas nessa [página](https://www.python.org/downloads/) para instalar o python e nessa  [página](https://pip.pypa.io/en/stable/installation/) para instalar o pip, que eh um gerenciador de pacotes python.
 
 4. Em um terminal, vá para o diretório no qual o projeto foi clonado e instale as dependências necessárias para execução dos microsserviços:
 
@@ -176,13 +176,14 @@ No Dockerfile, você precisa incluir cinco instruções
 -   `WORKDIR`: diretório da imagem na qual os comandos serão executados.
 -   `COPY`: comando para copiar o código fonte para a imagem.
 -   `RUN`: comando para instalação de dependências.
+-   `EXPOSE`: comando para expor uma porta disponivel no ambiente.
 -   `CMD`: comando para executar o seu código quando o container for criado.
 
 Ou seja, nosso Dockerfile terá as seguintes linhas:
 
 ```Dockerfile
 # Imagem base derivada do Node
-FROM node
+FROM python:3.12
 
 # Diretório de trabalho
 WORKDIR /app
@@ -191,10 +192,13 @@ WORKDIR /app
 COPY . /app
 
 # Comando para instalar as dependências
-RUN npm install
+RUN pip install --no-cache-dir -r requirements.txt
+
+#Comando para expor uma porta disponivel no ambiente.
+EXPOSE 8001
 
 # Comando para inicializar (executar) a aplicação
-CMD ["node", "/app/services/shipping/index.js"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
 ```
 
 #### Passo 2
