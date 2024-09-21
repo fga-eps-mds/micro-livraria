@@ -164,6 +164,12 @@ Caso você não tenha o Docker instaldo em sua máquina, é preciso instalá-lo 
 
 Crie um arquivo na raiz do projeto com o nome `shipping.Dockerfile`. Este arquivo armazenará as instruções para criação de uma imagem Docker para o serviço `Shipping`.
 
+Crie um arquivo dentro da raiz de cada micro servico, isto eh, a pasta que possui o arquivo manage.py, com o nome `Dockerfile`, voce pode usar o comando touch para isso.
+
+```bash
+touch services/shipping_service/Dockerfile
+```
+
 Como ilustrado na próxima figura, o Dockerfile é utilizado para gerar uma imagem. A partir dessa imagem, você pode criar várias instâncias de uma aplicação. Com isso, conseguimos escalar o microsserviço de `Shipping` de forma horizontal.
 
 <p align="center">
@@ -206,39 +212,47 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
 Agora nós vamos compilar o Dockerfile e criar a imagem. Para isto, execute o seguinte comando em um terminal do seu sistema operacional (esse comando precisa ser executado na raiz do projeto; ele pode também demorar um pouco mais para ser executado).
 
 ```
-docker build -t micro-livraria/shipping -f shipping.Dockerfile ./
+docker build -t micro-livraria/shipping -f services/shipping/Dockerfile ./
 ```
 
 onde:
 
 -   `docker build`: comando de compilação do Docker.
 -   `-t micro-livraria/shipping`: tag de identificação da imagem criada.
--   `-f shipping.Dockerfile`: dockerfile a ser compilado.
+-   `-f service/shipping_service/Dockerfile`: Caminho ate o dockerfile a ser compilado.
 
 O `./` no final indica que estamos executando os comandos do Dockerfile tendo como referência a raiz do projeto.
 
+
 #### Passo 3
 
-Antes de iniciar o serviço via container Docker, precisamos remover a inicialização do serviço de Shipping do comando `npm run start`. Para isso, basta remover o sub-comando `start-shipping` localizado na linha 7 do arquivo [package.json](https://github.com/aserg-ufmg/micro-livraria/blob/main/package.json), conforme mostrado no próximo diff (a linha com o símbolo "-" no início representa a linha original do arquivo; a linha com o símbolo "+" representa como essa linha deve ficar após a sua alteração):
-
-```diff
-diff --git a/package.json b/package.json
-index 25ff65c..552a04e 100644
---- a/package.json
-+++ b/package.json
-@@ -4,7 +4,7 @@
-     "description": "Toy example of microservice",
-     "main": "",
-     "scripts": {
--        "start": "run-p start-frontend start-controller start-shipping start-inventory",
-+        "start": "run-p start-frontend start-controller start-inventory",
-         "start-controller": "nodemon services/controller/index.js",
-         "start-shipping": "nodemon services/shipping/index.js",
-         "start-inventory": "nodemon services/inventory/index.js",
-
+Lembra de quando inciamos os micro servicos com o comando:
+```bash
+  nohup python services/shipping_service/manage.py runserver &> iventory.log &
 ```
 
-Em seguida, você precisa parar o comando antigo (basta usar um CTRL-C no terminal) e rodar o comando `npm run start` para efetuar as mudanças.
+Se executarmos o container que nos buildamos, ele tera conflito, pois teremos dois processos tentando acessar a mesma porta. Para isso nao ocorrer, precisamos para o processo.
+
+execute o comando:
+```bash
+  lsof -i 8000
+```
+Este comando retornara o processo que usa a porta 8000, tendo uma saida similar a essa:
+```bash
+COMMAND   PID    USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+python   12345   user   4u   IPv4 123456   0t0  TCP *:8000 (LISTEN)
+```
+O PID, eh o id do processo, usamos o comando `kill` para acabar com o processo:
+```bash
+  kill <PID>
+```
+nesse caso ficticion o comando seria:
+```bash
+  kill 12345
+```
+Preste MUITA atencao ao usar o comando kill, caso voce coloque o PID errado, pode acabar matando processos bem importantes do seu sistema.
+
+
 
 Por fim, para executar a imagem criada no passo anterior (ou seja, colocar de novo o microsserviço de `Shipping` no ar), basta usar o comando:
 
@@ -255,11 +269,9 @@ onde:
 -   `micro-livraria/shipping`: especifica qual a imagem deve-se executar.
 
 Se tudo estiver correto, você irá receber a seguinte mensagem em seu terminal:
-
 ```
 Shipping Service running
 ```
-
 E o Controller pode acessar o serviço diretamente através do container Docker.
 
 **Mas qual foi exatamente a vantagem de criar esse container?** Agora, você pode levá-lo para qualquer máquina ou sistema operacional e colocar o microsserviço para rodar sem instalar mais nada (incluindo bibliotecas, dependências externas, módulos de runtime, etc). Isso vai ocorrer com containers implementados em JavaScript, como no nosso exemplo, mas também com containers implementados em qualquer outra linguagem.
