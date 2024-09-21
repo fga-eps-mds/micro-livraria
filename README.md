@@ -253,11 +253,10 @@ nesse caso ficticion o comando seria:
 Preste MUITA atencao ao usar o comando kill, caso voce coloque o PID errado, pode acabar matando processos bem importantes do seu sistema.
 
 
-
 Por fim, para executar a imagem criada no passo anterior (ou seja, colocar de novo o microsserviço de `Shipping` no ar), basta usar o comando:
 
 ```
-docker run -ti --name shipping -p 3001:3001 micro-livraria/shipping
+docker run -ti --name shipping -p 8000:8000 micro-livraria/shipping
 ```
 
 onde:
@@ -265,7 +264,7 @@ onde:
 -   `docker run`: comando de execução de uma imagem docker.
 -   `-ti`: habilita a interação com o container via terminal.
 -   `--name shipping`: define o nome do container criado.
--   `-p 3001:3001`: redireciona a porta 3001 do container para sua máquina.
+-   `-p 8000:8000`: redireciona a porta 8000 do container para sua máquina.
 -   `micro-livraria/shipping`: especifica qual a imagem deve-se executar.
 
 Se tudo estiver correto, você irá receber a seguinte mensagem em seu terminal:
@@ -283,6 +282,13 @@ git add --all
 git commit -m "Tarefa prática #2 - Docker"
 git push origin main
 ```
+
+## Tarefa Pratica Extra
+
+Nesta tarefa extra iremos implementar uma comunicacao entre container dockers, um docker compose, ***explique sobre o que eh um docker compose e quais seus beneficios***
+
+caso voce nao tenha o docker compose instalado na sua maquina, ele pode ser instalado atraves desse link
+
 
 ## Comentários Finais
 
