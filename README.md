@@ -104,41 +104,76 @@ A seguir vamos descrever a sequência de passos para você executar o sistema lo
 
 ## Tarefa Prática #1: Implementando uma Nova Operação
 
-Nesta primeira tarefa, você irá implementar uma nova operação no serviço `Inventory`. Essa operação, chamada `SearchProductByID` vai pesquisar por um produto, dado o seu ID.
+Nesta primeira tarefa, você irá implementar uma nova operação no serviço `Inventory`.  A operação que vamos implementar é chamada `search_product_by_id` e vai permitir que um cliente obtenha os detalhes de um produto específico, baseado no seu ID.
+
+A tarefa está dividida em dois passos principais: definir a operação e configurá-la para ser acessível via uma nova rota.
 
 #### Passo 1
 
-Primeiro, você deve declarar a assinatura da nova operação. Para isso, inclua a definição dessa assinatura no arquivo `services/inventory_service/inventory/views.py`:
+Para começar, você deve criar uma função que lidere a busca de um produto pelo seu ID no arquivo `views.py`. Vamos carregar os dados de um arquivo JSON, que nesse caso simula o nosso banco de dados,  e retornar o produto correspondente ao ID informado. Caso o produto não seja encontrado, retornaremos uma mensagem de erro.
 
-```python
-@api_view(['GET'])
-def search_product_by_id(request, id):
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, '..', 'products.json')
 
-    with open(file_path, 'r') as file:
-        data = json.load(file)
+1. Abra o arquivo `services/inventory_service/inventory/views.py`:
+
+2. Adicione a seguinte função no arquivo, logo após a função já existente de `search_all_products`:
+
+    ```python
+    # Função para buscar um produto pelo ID
+    @api_view(['GET'])
+    def search_product_by_id(request, id):
+        # Obter o diretório atual e encontrar o caminho para o arquivo products.json
+        current_dir = os.path.dirname(__file__)
+        file_path = os.path.join(current_dir, '..', 'products.json')
     
-    product = next((item for item in data if item["id"] == int(id)), None)
-    if product:
-        return Response(product)
-    else:
-        return Response({"error": "Product not found"}, status=404)
-```
+        # Abrir o arquivo products.json e carregar os dados
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+    
+        # Procurar o produto com o ID fornecido
+        product = next((item for item in data if item["id"] == int(id)), None)
+    
+        # Se o produto for encontrado, retorná-lo
+        if product:
+            return Response(product)
+    
+        # Caso contrário, retornar uma mensagem de erro com status 404
+        else:
+            return Response({"error": "Product not found"}, status=404)
+    ```
+3. Explicando o código:
+    * `@api_view(['GET']):` Esse decorador define que a função responderá a requisições HTTP GET.
+    * `os.path.dirname(__file__)` e `os.path.join(...):` Estamos localizando o caminho correto do arquivo `products.json`.
+    * `json.load(file):` Lê o conteúdo do arquivo JSON e converte para uma lista de dicionários.
+    * `next((item for item in data if item["id"] == int(id)), None):` Este trecho percorre os itens do JSON e retorna o produto cujo id corresponde ao parâmetro fornecido. Se não encontrar, retorna `None`.
+    * **Resposta HTTP**: Caso o produto seja encontrado, retornamos seus dados com `Response(product)`. Se não for encontrado, retornamos um erro `404` com uma mensagem `"Product not found".
 
 #### Passo 2
 
-Inclua a nova rota no arquivo `services/inventory_service/inventory/urls.py`:
+Agora que a função `search_product_by_id` foi definida, precisamos garantir que ela seja acessível a partir de uma URL específica. Para isso, vamos adicionar uma rota no arquivo `urls.py` que vai mapear a URL solicitada para a função.
 
-```python
-from django.urls import path
-from .views import search_all_products, search_product_by_id
+1. Abra o arquivo `services/inventory_service/inventory/urls.py`:
 
-urlpatterns = [
-    path('products/', search_all_products, name='search_all_products'),
-    path('product/<int:id>/', search_product_by_id, name='search_product_by_id'),
-]
-```
+2. Adicione a seguinte rota para o novo endpoint:
+
+    ```python
+    from django.urls import path
+    from .views import search_all_products, search_product_by_id
+
+    # Definindo as URLs que mapeiam para as funções de visualização
+    urlpatterns = [
+        # Rota para buscar todos os produtos
+        path('products/', search_all_products, name='search_all_products'),
+
+        # Rota para buscar um produto específico pelo ID
+        path('product/<int:id>/', search_product_by_id, name='search_product_by_id'),
+    ]
+
+    ```
+
+3. Explicando o Código:
+   * `path('products/', search_all_products):` Essa rota já existente mapeia a URL `products/` para a função que retorna todos os produtos.
+   * `path('product/<int:id>/', search_product_by_id):` A nova rota define que ao acessar uma URL do tipo `/product/1/`, a função `search_product_by_id` será chamada, com o valor 1 sendo passado como o parâmetro id.
+   *  Neste exemplo, `id` é um número inteiro, como especificado pelo `<int:id>` na URL. O Django automaticamente valida o tipo de dado e repassa esse valor para a função.
 
 Finalize, efetuando uma chamada no novo endpoint da API: http://localhost:3000/product/1
 
@@ -275,7 +310,7 @@ E o Controller pode acessar o serviço diretamente através do container Docker.
 
 **Mas qual foi exatamente a vantagem de criar esse container?** Agora, você pode levá-lo para qualquer máquina ou sistema operacional e colocar o microsserviço para rodar sem instalar mais nada (incluindo bibliotecas, dependências externas, módulos de runtime, etc). Isso vai ocorrer com containers implementados em JavaScript, como no nosso exemplo, mas também com containers implementados em qualquer outra linguagem.
 
-**IMPORTANTE**: Se tudo funcionou corretamente, dê um **COMMIT & PUSH** (e certifique-se de que seu repositório no GitHub foi atualizado; isso é fundamental para seu trabalho ser devidamente corrigido).
+**IMPORTANTE**: Se tudo funcionou corretamente, dê um **COMMIT & PUSH** (e certifique-se de que seu repositório no GitHub foi atualizado).
 
 ```bash
 git add --all
