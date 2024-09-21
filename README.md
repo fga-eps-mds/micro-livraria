@@ -4,7 +4,7 @@ Este repositório contem um exemplo simples de uma livraria virtual construída 
 
 O exemplo foi projetado para ser usado em uma **aula prática sobre microsserviços**, que pode, por exemplo, ser realizada após o estudo do [Capítulo 7](https://engsoftmoderna.info/cap7.html) do livro [Engenharia de Software Moderna](https://engsoftmoderna.info).
 
-O objetivo da aula é permitir que o aluno tenha um primeiro contato com microsserviços e com tecnologias normalmente usadas nesse tipo de arquitetura, tais como **Node.js**, **REST**, **gRPC** e **Docker**.
+O objetivo da aula é permitir que o aluno tenha um primeiro contato com microsserviços e com tecnologias normalmente usadas nesse tipo de arquitetura, tais como **Django**, **REST** e **Docker**.
 
 Como nosso objetivo é didático, na livraria virtual estão à venda apenas três livros, conforme pode ser visto na próxima figura, que mostra a interface Web do sistema. Além disso, a operação de compra apenas simula a ação do usuário, não efetuando mudanças no estoque. Assim, os clientes da livraria podem realizar apenas duas operações: (1) listar os produtos à venda; (2) calcular o frete de envio.
 
@@ -22,56 +22,31 @@ No restante deste documento vamos:
 
 ## Arquitetura
 
-A micro-livraria possui quatro microsserviços:
+A micro-livraria possui três microsserviços:
 
 -   Front-end: microsserviço responsável pela interface com usuário, conforme mostrado na figura anterior.
--   Controller: microsserviço responsável por intermediar a comunicação entre o front-end e o backend do sistema.
 -   Shipping: microserviço para cálculo de frete.
 -   Inventory: microserviço para controle do estoque da livraria.
 
-Os quatro microsserviços estão implementados em **JavaScript**, usando o Node.js para execução dos serviços no back-end.
+Os quatro microsserviços estão implementados em **Python**, usando o Django REST Framework (DRF) para execução dos serviços no back-end.
 
-No entanto, **você conseguirá completar as tarefas práticas mesmo se nunca programou em JavaScript**. O motivo é que o nosso roteiro já inclui os trechos de código que devem ser copiados para o sistema.
+No entanto, **você conseguirá completar as tarefas práticas mesmo se nunca programou em Python**. O motivo é que o nosso roteiro já inclui os trechos de código que devem ser copiados para o sistema.
 
 Para facilitar a execução e entendimento do sistema, também não usamos bancos de dados ou serviços externos.
 
 ## Protocolos de Comunicação
 
-Como ilustrado no diagrama a seguir, a comunicação entre o front-end e o backend usa uma **API REST**, como é comum no caso de sistemas Web.
+Nessa adaptação, a comunicação entre o front-end e o back-end é baseada em uma **API REST**, que é uma abordagem comum em sistemas web. 
 
-Já a comunicação entre o Controller e os microsserviços do back-end é baseada em [gRPC](https://grpc.io/).
+O protocolo utilizado para essa comunicação é HTTP/HTTPS, garantindo uma troca de informações eficiente e segura.
 
-<p align="center">
-    <img width="70%" src="https://user-images.githubusercontent.com/7620947/108454750-bc2b4c80-724b-11eb-82e5-717b8b5c5a88.png" />
-</p>
-
-Optamos por usar gRPC no backend porque ele possui um desempenho melhor do que REST. Especificamente, gRPC é baseado no conceito de **Chamada Remota de Procedimentos (RPC)**. A ideia é simples: em aplicações distribuídas que usam gRPC, um cliente pode chamar funções implementadas em outros processos de forma transparente, isto é, como se tais funções fossem locais. Em outras palavras, chamadas gRPC tem a mesma sintaxe de chamadas normais de função.
-
-Para viabilizar essa transparência, gRPC usa dois conceitos centrais:
-
--   uma linguagem para definição de interfaces
--   um protocolo para troca de mensagens entre aplicações clientes e servidoras.
-
-Especificamente, no caso de gRPC, a implementação desses dois conceitos ganhou o nome de **Protocol Buffer**. Ou seja, podemos dizer que:
-
-> Protocol Buffer = linguagem para definição de interfaces + protocolo para definição das mensagens trocadas entre aplicações clientes e servidoras
-
-### Exemplo de Arquivo .proto
-
-Quando trabalhamos com gRPC, cada microserviço possui um arquivo `.proto` que define a assinatura das operações que ele disponibiliza para os outros microsserviços.
-Neste mesmo arquivo, declaramos também os tipos dos parâmetros de entrada e saída dessas operações.
-
-O exemplo a seguir mostra o arquivo [.proto](https://github.com/aserg-ufmg/micro-livraria/blob/main/proto/shipping.proto) do nosso microsserviço de frete. Nele, definimos que esse microsserviço disponibiliza uma função `GetShippingRate`. Para chamar essa função devemos passar como parâmetro de entrada um objeto contendo o CEP (`ShippingPayLoad`). Após sua execução, a função retorna como resultado um outro objeto (`ShippingResponse`) com o valor do frete.
+Optamos por usar HTTP/HTTPS no back-end para a comunicação entre os serviços, pois, além de ser amplamente suportado, é uma solução consolidada e simples para o desenvolvimento de APIs REST. A comunicação entre os microsserviços acontece por meio de chamadas HTTP, em que as requisições são feitas com métodos como `GET`, `POST`, `PUT` e `DELETE`, e os dados são geralmente trocados no formato JSON.
 
 <p align="center">
-    <img width="70%" src="https://user-images.githubusercontent.com/7620947/108770189-c776c480-7538-11eb-850a-f8a23f562fa5.png" />
+    <img width="70%" src="https://github.com/user-attachments/assets/63b44b80-8fa1-4e57-b32f-487c2d06f4df" />
 </p>
 
-Em gRPC, as mensagens (exemplo: `Shippingload`) são formadas por um conjunto de campos, tal como em um `struct` da linguagem C, por exemplo. Todo campo possui um nome (exemplo: `cep`) e um tipo (exemplo: `string`). Além disso, todo campo tem um número inteiro que funciona como um identificador único para o mesmo na mensagem (exemplo: ` = 1`). Esse número é usado pela implementação de gRPC para identificar o campo no formato binário de dados usado por gRPC para comunicação distribuída.
-
-Arquivos .proto são usados para gerar **stubs**, que nada mais são do que proxies que encapsulam os detalhes de comunicação em rede, incluindo troca de mensagens, protocolos, etc. Mais detalhes sobre o padrão de projeto Proxy podem ser obtidos no [Capítulo 6](https://engsoftmoderna.info/cap6.html). 
-
-Em linguagens estáticas, normalmente precisa-se chamar um compilador para gerar o código de tais stubs. No caso de JavaScript, no entanto, esse passo não é necessário, pois os stubs são gerados de forma transparente, em tempo de execução.
+A escolha por HTTP/HTTPS para a implementação da API REST se deu pela simplicidade e facilidade de integração entre os microsserviços, mantendo a eficiência na comunicação e a compatibilidade com diversas ferramentas e plataformas. Embora gRPC ofereça benefícios como maior desempenho em alguns cenários, o uso de HTTP/HTTPS é mais que suficiente para as necessidades da nossa aplicação.
 
 ## Executando o Sistema
 
@@ -83,34 +58,47 @@ A seguir vamos descrever a sequência de passos para você executar o sistema lo
 
 2. Vá para o terminal do seu sistema operacional e clone o projeto (lembre-se de incluir o seu usuário GitHub na URL antes de executar)
 
-```
-git clone https://github.com/<SEU USUÁRIO>/micro-livraria.git
-```
+    ```bash
+    git clone https://github.com/<SEU USUÁRIO>/micro-livraria.git
+    ```
 
-3. É também necessário ter o Node.js instalado na sua máquina. Se você não tem, siga as instruções para instalação contidas nessa [página](https://nodejs.org/en/download/).
+3. É também necessário ter o `Python` instalado na sua máquina. Se você não tem, siga as instruções para instalação contidas nessa [página](https://www.python.org/downloads/).
 
 4. Em um terminal, vá para o diretório no qual o projeto foi clonado e instale as dependências necessárias para execução dos microsserviços:
 
-```
-cd micro-livraria
-npm install
-```
+    ```bash
+    cd micro-livraria
+    python -m venv venv
+    source ven/bin/activate
+    pip install -r requirements
+    ```
 
-5. Inicie os microsserviços através do comando:
+5. Inicie os microsserviços através dos comandos abaixo:
 
-```
-npm run start
-```
+    * Rodando o microserviço de shipping
+        ```bash
+        nohup python services/shipping_service/manage.py runserver &> iventory.log &
+        ```
+
+    * Rodando o microserviço de inventory
+        ```bash
+        nohup python services/inventory_service/manage.py runserver 8001 &> service.log &
+        ```
+
+    * Rodando o microserviço do frontend
+        ```bash
+        nohup python -m http.server 5000 --directory services/frontend &> frontend.log &
+        ```
 
 6.  Para fins de teste, efetue uma requisição para o microsserviço reponsável pela API do backend.
 
 -   Se tiver o `curl` instalado na sua máquina, basta usar:
 
-```
-curl -i -X GET http://localhost:3000/products
-```
+    ```bash
+    curl -i -X GET http://localhost:80001/api/products
+    ```
 
--   Caso contrário, você pode fazer uma requisição acessando, no seu navegador, a seguinte URL: `http://localhost:3000/products`.
+-   Caso contrário, você pode fazer uma requisição acessando, no seu navegador, a seguinte URL: `http://localhost:8001/api/products`.
 
 7. Teste agora o sistema como um todo, abrindo o front-end em um navegador: http://localhost:5000. Faça então um teste das principais funcionalidades da livraria.
 
@@ -118,113 +106,45 @@ curl -i -X GET http://localhost:3000/products
 
 Nesta primeira tarefa, você irá implementar uma nova operação no serviço `Inventory`. Essa operação, chamada `SearchProductByID` vai pesquisar por um produto, dado o seu ID.
 
-Como descrito anteriormente, as assinaturas das operações de cada microsserviço são definidas em um arquivo `.proto`, no caso [proto/inventory.proto](https://github.com/aserg-ufmg/micro-livraria/blob/main/proto/inventory.proto).
-
 #### Passo 1
 
-Primeiro, você deve declarar a assinatura da nova operação. Para isso, inclua a definição dessa assinatura no referido arquivo `.proto` (na linha logo após a assinatura da função `SearchAllProducts`):
+Primeiro, você deve declarar a assinatura da nova operação. Para isso, inclua a definição dessa assinatura no arquivo `services/inventory_service/inventory/views.py`:
 
-```proto
-service InventoryService {
-    rpc SearchAllProducts(Empty) returns (ProductsResponse) {}
-    rpc SearchProductByID(Payload) returns (ProductResponse) {}
-}
+```python
+@api_view(['GET'])
+def search_product_by_id(request, id):
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, '..', 'products.json')
+
+    with open(file_path, 'r') as file:
+        data = json.load(file)
+    
+    product = next((item for item in data if item["id"] == int(id)), None)
+    if product:
+        return Response(product)
+    else:
+        return Response({"error": "Product not found"}, status=404)
 ```
-
-Em outras palavras, você está definindo que o microsserviço `Inventory` vai responder a uma nova requisição, chamada `SearchProductByID`, que tem como parâmetro de entrada um objeto do tipo `Payload` e como parâmetro de saída um objeto do tipo `ProductResponse`.
 
 #### Passo 2
 
-Inclua também no mesmo arquivo a declaração do tipo do objeto `Payload`, o qual apenas contém o ID do produto a ser pesquisado.
+Inclua a nova rota no arquivo `services/inventory_service/inventory/urls.py`:
 
-```proto
-message Payload {
-    int32 id = 1;
-}
-```
+```python
+from django.urls import path
+from .views import search_all_products, search_product_by_id
 
-Veja que `ProductResponse` -- isto é, o tipo de retorno da operação -- já está declarado mais abaixo no arquivo `proto`:
-
-```proto
-message ProductsResponse {
-    repeated ProductResponse products = 1;
-}
-```
-
-Ou seja, a resposta da nossa requisição conterá um único campo, do tipo `ProductResponse`, que também já está implementando no mesmo arquivo:
-
-```proto
-message ProductResponse {
-    int32 id = 1;
-    string name = 2;
-    int32 quantity = 3;
-    float price = 4;
-    string photo = 5;
-    string author = 6;
-}
-```
-
-#### Passo 3
-
-Agora você deve implementar a função `SearchProductByID` no arquivo [services/inventory/index.js](https://github.com/aserg-ufmg/micro-livraria/blob/main/services/inventory/index.js).
-
-Reforçando, no passo anterior, apenas declaramos a assinatura dessa função. Então, agora, vamos prover uma implementação para ela.
-
-Para isso, você precisa implementar a função requerida pelo segundo parâmetro da função `server.addService`, localizada na linha 17 do arquivo [services/inventory/index.js](https://github.com/aserg-ufmg/micro-livraria/blob/main/services/inventory/index.js).
-
-De forma semelhante à função `SearchAllProducts`, que já está implementada, você deve adicionar o corpo da função `SearchProductByID` com a lógica de pesquisa de produtos por ID. Este código deve ser adicionado logo após o `SearchAllProducts` na linha 23.
-
-```js
-    SearchProductByID: (payload, callback) => {
-        callback(
-            null,
-            products.find((product) => product.id == payload.request.id)
-        );
-    },
-```
-
-A função acima usa o método `find` para pesquisar em `products` pelo ID de produto fornecido. Veja que:
-
--   `payload` é o parâmetro de entrada do nosso serviço, conforme definido antes no arquivo .proto (passo 2). Ele armazena o ID do produto que queremos pesquisar. Para acessar esse ID basta escrever `payload.request.id`.
-
--   `product` é uma unidade de produto a ser pesquisado pela função `find` (nativa de JavaScript). Essa pesquisa é feita em todos os items da lista de produtos até que um primeiro `product` atenda a condição de busca, isto é `product.id == payload.request.id`.
-
--   [products](https://github.com/aserg-ufmg/micro-livraria/blob/main/services/inventory/products.json) é um arquivo JSON que contém a descrição dos livros à venda na livraria.
-
--   `callback` é uma função que deve ser invocada com dois parâmetros:
-    -   O primeiro parâmetro é um objeto de erro, caso ocorra. No nosso exemplo nenhum erro será retornado, portanto `null`.
-    -   O segundo parâmetro é o resultado da função, no nosso caso um `ProductResponse`, assim como definido no arquivo [proto/inventory.proto](https://github.com/aserg-ufmg/micro-livraria/blob/main/proto/inventory.proto).
-
-#### Passo 4
-
-Para finalizar, temos que incluir a função `SearchProductByID` em nosso `Controller`. Para isso, você deve incluir uma nova rota `/product/{id}` que receberá o ID do produto como parâmetro. Na definição da rota, você deve também incluir a chamada para o método definido no Passo 3.
-
-Sendo mais específico, o seguinte trecho de código deve ser adicionado na linha 44 do arquivo [services/controller/index.js](https://github.com/aserg-ufmg/micro-livraria/blob/main/services/controller/index.js), logo após a rota `/shipping/:cep`.
-
-```js
-app.get('/product/:id', (req, res, next) => {
-    // Chama método do microsserviço.
-    inventory.SearchProductByID({ id: req.params.id }, (err, product) => {
-        // Se ocorrer algum erro de comunicação
-        // com o microsserviço, retorna para o navegador.
-        if (err) {
-            console.error(err);
-            res.status(500).send({ error: 'something failed :(' });
-        } else {
-            // Caso contrário, retorna resultado do
-            // microsserviço (um arquivo JSON) com os dados
-            // do produto pesquisado
-            res.json(product);
-        }
-    });
-});
+urlpatterns = [
+    path('products/', search_all_products, name='search_all_products'),
+    path('product/<int:id>/', search_product_by_id, name='search_product_by_id'),
+]
 ```
 
 Finalize, efetuando uma chamada no novo endpoint da API: http://localhost:3000/product/1
 
 Para ficar claro: até aqui, apenas implementamos a nova operação no backend. A sua incorporação no frontend ficará pendente, pois requer mudar a interface Web, para, por exemplo, incluir um botão "Pesquisar Livro".
 
-**IMPORTANTE**: Se tudo funcionou corretamente, dê um **COMMIT & PUSH** (e certifique-se de que seu repositório no GitHub foi atualizado; isso é fundamental para seu trabalho ser devidamente corrigido).
+**IMPORTANTE**: Se tudo funcionou corretamente, dê um **COMMIT & PUSH** (e certifique-se de que seu repositório no GitHub foi atualizado).
 
 ```bash
 git add --all
