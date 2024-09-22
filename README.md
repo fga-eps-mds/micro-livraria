@@ -166,7 +166,7 @@ Agora que a função `search_product_by_id` foi definida, precisamos garantir qu
         path('products/', search_all_products, name='search_all_products'),
 
         # Rota para buscar um produto específico pelo ID
-        path('product/<int:id>/', search_product_by_id, name='search_product_by_id'),
+        path('products/<int:id>/', search_product_by_id, name='search_product_by_id'),
     ]
 
     ```
@@ -176,7 +176,7 @@ Agora que a função `search_product_by_id` foi definida, precisamos garantir qu
    * `path('product/<int:id>/', search_product_by_id):` A nova rota define que ao acessar uma URL do tipo `/product/1/`, a função `search_product_by_id` será chamada, com o valor 1 sendo passado como o parâmetro id.
    *  Neste exemplo, `id` é um número inteiro, como especificado pelo `<int:id>` na URL. O Django automaticamente valida o tipo de dado e repassa esse valor para a função.
 
-Finalize, efetuando uma chamada no novo endpoint da API: http://localhost:3000/product/1
+Finalize, efetuando uma chamada no novo endpoint da API: http://localhost:8001/products/1
 
 Para ficar claro: até aqui, apenas implementamos a nova operação no backend. A sua incorporação no frontend ficará pendente, pois requer mudar a interface Web, para, por exemplo, incluir um botão "Pesquisar Livro".
 
@@ -201,13 +201,13 @@ Caso você não tenha o Docker instaldo em sua máquina, é preciso instalá-lo 
 Crie um arquivo chamado `Dockerfile` dentro da raiz da pasta do micro servico `shipping_service` com o comando:
 
 ```bash
-touch /services/shipping_service/Dockerfile
+touch services/shipping_service/Dockerfile
 ```
 
 copie o `requirements.txt` para dentro do `shipping_service` com o comando `cp`:
 
 ```bash
-cp requirements.txt /services/shipping_service/requirements.txt
+cp requirements.txt services/shipping_service/requirements.txt
 ```
 
 Como ilustrado na próxima figura, o Dockerfile é utilizado para gerar uma imagem. A partir dessa imagem, você pode criar várias instâncias de uma aplicação. Com isso, conseguimos escalar o microsserviço de `Shipping` de forma horizontal.
@@ -243,7 +243,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8000
 
 # Comando para inicializar (executar) a aplicação
-CMD [python, manage.py, runserver, 0.0.0.0:8000]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 ```
 
 #### Passo 2
@@ -251,7 +251,7 @@ CMD [python, manage.py, runserver, 0.0.0.0:8000]
 Agora nós vamos compilar o Dockerfile e criar a imagem. Para isto, execute o seguinte comando em um terminal do seu sistema operacional (esse comando precisa ser executado na raiz do projeto; ele pode também demorar um pouco mais para ser executado).
 
 ```
-docker build -t micro-livraria/shipping -f services/shipping/Dockerfile ./
+docker build -t micro-livraria/shipping -f services/shipping_service/Dockerfile ./
 ```
 
 onde:
@@ -272,7 +272,7 @@ Lembra de quando inciamos os micro servicos com o comando abaixo?
 
 Se executarmos o container que nós construímos, ele terá conflito, pois teremos dois processos do computador tentando acessar a mesma porta. Para isso não ocorrer, precisamos parar o processo executando o comando:
 ```bash
-  lsof -i 8000
+  lsof -i :8000
 ```
 Este comando retornará o processo que usa a porta 8000, tendo uma saída similar a esta:
 
