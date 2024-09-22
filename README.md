@@ -1,4 +1,4 @@
-Este repositorio eh um fork do repositorio [micro-livraira](https://github.com/aserg-ufmg/micro-livraria) criado por doscentes e discentes da UFMG e adaptado por Doscentes e discentes da UnB, viva ao mundo de software livre!
+Este repositorio eh um fork do repositorio [micro-livraira](https://github.com/aserg-ufmg/micro-livraria) criado para modificar a estrutura de microservicos para uma api rest implementada em python.
 
 
 # Micro-Livraria: Exemplo Prático de Microsserviços
@@ -288,7 +288,7 @@ O PID, eh o id do processo, usamos o comando `kill` para acabar com o processo:
 ```bash
   kill <PID>
 ```
-nesse caso fictiocion, a resposta do comando retorunou o procesos python de PID (id do processo) igual a `1234`, o comando seria:
+nesse caso ficticio, a resposta do comando retorunou o procesos python de PID (id do processo) igual a `1234`, o comando seria:
 ```bash
   kill 12345
 ```
@@ -363,6 +363,15 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
 
 Para fazermos o Dockerfile do micro servico `frontend` usaremos comando diferentes, pois a maneira que rodamos o microservico usando um servidor nginx, uma solucao amplamente usada para subirmos aplicacoes web html, javascript e css.
 
+
+
+- `FROM`: usa a imagem oficial do Nginx como base, especificamente a versão leve (alpine), que é otimizada para ser menor e mais rápida.
+- `WORKDIR`: define o diretório de trabalho dentro do container como /usr/share/nginx/html, que é onde o Nginx procura os arquivos estáticos para servir.
+- `RUN`: remove os arquivos estáticos padrão que vêm com a imagem do Nginx. Isso é necessário para evitar conflitos e garantir que apenas seus arquivos estáticos sejam usados.
+- `COPY`: copia todos os arquivos do diretório atual (onde o Dockerfile está) para o diretório de trabalho definido no container (/usr/share/nginx/html). Aqui, você está transferindo os arquivos HTML, CSS e JavaScript da sua aplicação.
+- `EXPOSE`: expõe a porta 5000 para o mundo externo. Essa é a porta que você usará para acessar a aplicação em execução, permitindo que outros serviços ou usuários se conectem.
+- `CMD`: inicia o servidor Nginx em primeiro plano (daemon off), o que é essencial para que o container permaneça ativo e escutando requisições. Sem isso, o container encerraria imediatamente após a execução.
+
 ```Dockerfile
 # Use the official Nginx image as the base
 FROM nginx:alpine
@@ -433,7 +442,7 @@ services:  # Início da definição dos serviços
 O projeto estara com essa estrutura:  
 
 micro-livraria  
-│    
+│  
 ├── docker-compose.yml  
 ├── LICENSE  
 ├── README.md  
@@ -454,7 +463,7 @@ micro-livraria
     │   │   ├── __pycache__  
     │   │   │   └── nao se preocupe com os arquivos dentro desse diretorio  
     │   │   ├── tests.py  
-    │   │   ├── urls.py    
+    │   │   ├── urls.py  
     │   │   └── views.py  
     │   ├── inventory_service  
     │   │   ├── __init__.py  
@@ -470,16 +479,16 @@ micro-livraria
         ├── shipping  
         │   ├── __init__.py  
         │   ├── __pycache__  
-        │   │   └── nao se preocupe com os arquivos dentro desse diretorio    
+        │   │   └── nao se preocupe com os arquivos dentro desse diretorio  
         │   ├── tests.py  
         │   ├── urls.py  
         │   └── views.py  
         └── shipping_service  
             ├── __init__.py  
             ├── __pycache__  
-            │   └── nao se preocupe com os arquivos dentro desse diretorio    
-            ├── settings.py    
-            └── urls.py    
+            │   └── nao se preocupe com os arquivos dentro desse diretorio    
+            ├── settings.py  
+            └── urls.py  
 12 directories, 48 files  
 
 verifique se a estrura esta a mesma do seu projeto, o comando `tree` pode te ajudar nisso!  (para instalar rode o comando `sudo apt install tree` e depois rode `tree`)  
