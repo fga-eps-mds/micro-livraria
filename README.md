@@ -30,7 +30,7 @@ A micro-livraria possui três microsserviços:
 
 Os microsserviços estão implementados em **Python** e **javaScript**, usando o Django REST Framework (DRF), em python para execução dos serviços no back-end e JavaScript, Css e Html para execucao do Front-end.
 
-No entanto, **você conseguirá completar as tarefas práticas mesmo se nunca programou em Python**. O motivo é que o nosso roteiro já inclui os trechos de código que devem ser copiados para o sistema.
+No entanto, **você conseguirá completar as tarefas práticas mesmo se nunca programou em Python e/ou JavaScript**. O motivo é que o nosso roteiro já inclui os trechos de código que devem ser copiados para o sistema.
 
 Para facilitar a execução e entendimento do sistema, também não usamos bancos de dados ou serviços externos.
 
@@ -198,7 +198,8 @@ Caso você não tenha o Docker instaldo em sua máquina, é preciso instalá-lo 
 #### Passo 1
 
 
-Crie um arquivo dentro da raiz de cada micro servico, isto eh, a pasta que possui o arquivo manage.py, com o nome `Dockerfile`, voce pode usar o comando touch para isso.
+
+Crie um arquivo chamado `Dockerfile` dentro da raiz da pasta do micro servico `shipping_service` com o comando:
 
 ```bash
 touch /services/shipping_service/Dockerfile
@@ -241,10 +242,10 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 #Comando para expor uma porta disponivel no ambiente.
-EXPOSE 8001
+EXPOSE 8000
 
 # Comando para inicializar (executar) a aplicação
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
+CMD ["python", "manage.py", "runserver", "0.0.shiping"]
 ```
 
 #### Passo 2
@@ -271,9 +272,7 @@ Lembra de quando inciamos os micro servicos com o comando:
   nohup python services/shipping_service/manage.py runserver &> iventory.log &
 ```
 
-Se executarmos o container que nos buildamos, ele tera conflito, pois teremos dois processos tentando acessar a mesma porta. Para isso nao ocorrer, precisamos para o processo.
-
-execute o comando:
+Se executarmos o container que nos buildamos, ele tera conflito, pois teremos dois processos do computador tentando acessar a mesma porta. Para isso nao ocorrer, precisamos para o processo executando o comando:
 ```bash
   lsof -i 8000
 ```
@@ -286,11 +285,11 @@ O PID, eh o id do processo, usamos o comando `kill` para acabar com o processo:
 ```bash
   kill <PID>
 ```
-nesse caso ficticion o comando seria:
+nesse caso fictiocion, a resposta do comando retorunou o procesos python de PID (id do processo) igual a `1234`, o comando seria:
 ```bash
   kill 12345
 ```
-Preste MUITA atencao ao usar o comando kill, caso voce coloque o PID errado, pode acabar matando processos bem importantes do seu sistema.
+Preste **MUITA** atencao ao usar o comando kill, caso voce coloque o PID errado, pode acabar matando processos bem importantes do seu sistema.
 
 
 Por fim, para executar a imagem criada no passo anterior (ou seja, colocar de novo o microsserviço de `Shipping` no ar), basta usar o comando:
@@ -325,11 +324,13 @@ git push origin main
 
 ## Tarefa Pratica Extra
 
-Nesta tarefa extra iremos implementar uma comunicacao entre container dockers, um docker compose, ***explique sobre o que eh um docker compose e quais seus beneficios***
+Nesta tarefa extra iremos implementar uma comunicacao entre container dockers, um docker compose, que é uma ferramenta para definir e gerenciar múltiplos contêineres Docker em um único arquivo YAML, facilitando a configuração e o gerenciamento de aplicações que dependem de vários serviços. Você pode especificar a imagem, volumes, redes e variáveis de ambiente, permitindo iniciar todos os serviços com um único comando.
 
-caso voce nao tenha o docker compose instalado na sua maquina, ele pode ser instalado atraves desse link
 
-repita a tarefa pratica dois com o micro servico `inventory_service`:
+
+caso voce nao tenha o docker compose instalado na sua maquina, ele pode ser instalado atraves da [documentação oficial](https://docs.docker.com/compose/install/).
+
+repita a `tarefa pratica dois` com o micro servico `inventory_service`:
 
 Com base na logica usada, tente seguir o mesmo passo a passo implementando cada etapa, lembre de trocar os nomes.
 
@@ -354,7 +355,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8001
 
 # Comando para inicializar (executar) a aplicação
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
 ```
 
 Para fazermos o Dockerfile do micro servico `frontend` usaremos comando diferentes, pois a maneira que rodamos o microservico usando um servidor nginx, uma solucao amplamente usada para subirmos aplicacoes web html, javascript e css.
@@ -384,39 +385,118 @@ Ao final teremos os 3 Dockerfiles, cada um na raiz do seu respectivo diretorio, 
 ```bash
 touch docker-compose.yml
 ```
+
+No docker-compose.yml, você precisa incluir várias chaves e suas respectivas configurações:
+
+services: define os serviços que compõem sua aplicação, permitindo agrupar diferentes componentes, como frontend e backend, em containers separados.  
+
+- `build`: especifica como construir a imagem Docker para um serviço, contendo configurações para o contexto e o arquivo Dockerfile.  
+- `context`: determina o diretório que contém o Dockerfile e os arquivos necessários para a construção da imagem, devendo ser relativo ao local do arquivo docker-compose.yml.  
+- `dockerfile`: indica o nome do arquivo Dockerfile a ser utilizado na construção da imagem; por padrão, o Docker procura um arquivo chamado Dockerfile, mas você pode definir um nome diferente.  
+- `ports`: mapeia as portas do host para as portas do container, permitindo acesso aos serviços, no formato <porta_host>:<porta_container>.  
+- `command`: define o comando a ser executado quando o container é iniciado, personalizando o que acontece ao inicializar o serviço, como iniciar um servidor ou executar um script.  
+
+Teremos um Dockerfile seguindo essa estrutura:  
+
 ```Dockerfile
-version: '3.8'
+version: '3.8'  # Define a versão do Docker Compose a ser utilizada
 
-services:
-  inventory_service:
-    build:
-      context: ./services/inventory_service
-      dockerfile: Dockerfile
-    ports:
-      - "8001:8001"
-    command: python manage.py runserver 0.0.0.0:8001
+services:  # Início da definição dos serviços
 
-  shipping_service:
-    build:
-      context: ./services/shipping_service
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    command: python manage.py runserver 0.0.0.0:8000
+  inventory_service:  # Serviço de inventário
+    build:  # Configurações para construir a imagem
+      context: ./services/inventory_service  # Diretório onde está o Dockerfile
+      dockerfile: Dockerfile  # Nome do arquivo Dockerfile
+    ports:  # Configurações de portas
+      - "8001:8001"  # Mapeia a porta 8001 do host para a porta 8001 do container
+    command: python manage.py runserver 0.0.0.0:8001  # Comando para iniciar o serviço
 
-  frontend:
-    build:
-      context: ./services/frontend
-      dockerfile: Dockerfile
-    ports:
-      - "5000:80" 
+  shipping_service:  # Serviço de envio
+    build:  # Configurações para construir a imagem
+      context: ./services/shipping_service  # Diretório onde está o Dockerfile
+      dockerfile: Dockerfile  # Nome do arquivo Dockerfile
+    ports:  # Configurações de portas
+      - "8000:8000"  # Mapeia a porta 8000 do host para a porta 8000 do container
+    command: python manage.py runserver 0.0.0.0:8000  # Comando para iniciar o serviço
+
+  frontend:  # Serviço frontend
+    build:  # Configurações para construir a imagem
+      context: ./services/frontend  # Diretório onde está o Dockerfile
+      dockerfile: Dockerfile  # Nome do arquivo Dockerfile
+    ports:  # Configurações de portas
+      - "5000:80"  # Mapeia a porta 5000 do host para a porta 80 do container
 ```
 
-***descreva os comando seguindo os padroes anteriores***
+O projeto estara com essa estrutura:
 
+micro-livraria
+│  
+├── docker-compose.yml
+├── LICENSE
+├── README.md
+└── services
+    ├── frontend
+    │   ├── Dockerfile
+    │   ├── img
+    │   │   ├── design.png
+    │   │   ├── esm.png
+    │   │   └── refactoring.png
+    │   ├── index.css
+    │   ├── index.html
+    │   └── index.js
+    ├── inventory_service
+    │   ├── Dockerfile
+    │   ├── inventory
+    │   │   ├── __init__.py
+    │   │   ├── __pycache__
+    │   │   │   ├── admin.cpython-312.pyc
+    │   │   │   ├── apps.cpython-312.pyc
+    │   │   │   ├── __init__.cpython-312.pyc
+    │   │   │   ├── models.cpython-312.pyc
+    │   │   │   ├── serializers.cpython-312.pyc
+    │   │   │   ├── urls.cpython-312.pyc
+    │   │   │   └── views.cpython-312.pyc
+    │   │   ├── tests.py
+    │   │   ├── urls.py
+    │   │   └── views.py
+    │   ├── inventory_service
+    │   │   ├── __init__.py
+    │   │   ├── settings.py
+    │   │   └── urls.py
+    │   ├── manage.py
+    │   ├── products.json
+    │   └── requirements.txt
+    └── shipping_service
+        ├── Dockerfile
+        ├── manage.py
+        ├── requirements.txt
+        ├── shipping
+        │   ├── __init__.py
+        │   ├── __pycache__
+        │   │   ├── admin.cpython-312.pyc
+        │   │   ├── apps.cpython-312.pyc
+        │   │   ├── __init__.cpython-312.pyc
+        │   │   ├── models.cpython-312.pyc
+        │   │   ├── urls.cpython-312.pyc
+        │   │   └── views.cpython-312.pyc
+        │   ├── tests.py
+        │   ├── urls.py
+        │   └── views.py
+        └── shipping_service
+            ├── __init__.py
+            ├── __pycache__
+            │   ├── __init__.cpython-312.pyc
+            │   ├── settings.cpython-312.pyc
+            │   ├── urls.cpython-312.pyc
+            │   └── wsgi.cpython-312.pyc
+            ├── settings.py
+            └── urls.py
 
-Agora comite as novos mudancas feitas
+12 directories, 48 files
 
+verifique se a estrura esta a mesma do seu projeto, o comando `tree` pode te ajudar nisso!  (para instalar rode o comando `sudo apt install tree` e depois rode `tree`)
+
+Agora comite as novos mudancas feitas seguindo os comandos que voce ja conhece!
 
 ## Comentários Finais
 
