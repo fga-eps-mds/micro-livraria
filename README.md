@@ -197,12 +197,17 @@ Caso você não tenha o Docker instaldo em sua máquina, é preciso instalá-lo 
 
 #### Passo 1
 
-Crie um arquivo na raiz do projeto com o nome `shipping.Dockerfile`. Este arquivo armazenará as instruções para criação de uma imagem Docker para o serviço `Shipping`.
 
 Crie um arquivo dentro da raiz de cada micro servico, isto eh, a pasta que possui o arquivo manage.py, com o nome `Dockerfile`, voce pode usar o comando touch para isso.
 
 ```bash
-touch services/shipping_service/Dockerfile
+touch /services/shipping_service/Dockerfile
+```
+
+copie o `requirements.txt` para dentro do `shipping_service` com o comando `cp`:
+
+```bash
+cp requirements.txt /services/shipping_service/requirements.txt
 ```
 
 Como ilustrado na próxima figura, o Dockerfile é utilizado para gerar uma imagem. A partir dessa imagem, você pode criar várias instâncias de uma aplicação. Com isso, conseguimos escalar o microsserviço de `Shipping` de forma horizontal.
@@ -223,7 +228,7 @@ No Dockerfile, você precisa incluir cinco instruções
 Ou seja, nosso Dockerfile terá as seguintes linhas:
 
 ```Dockerfile
-# Imagem base derivada do Node
+# Imagem base derivada do Python
 FROM python:3.12
 
 # Diretório de trabalho
@@ -323,6 +328,94 @@ git push origin main
 Nesta tarefa extra iremos implementar uma comunicacao entre container dockers, um docker compose, ***explique sobre o que eh um docker compose e quais seus beneficios***
 
 caso voce nao tenha o docker compose instalado na sua maquina, ele pode ser instalado atraves desse link
+
+repita a tarefa pratica dois com o micro servico `inventory_service`:
+
+Com base na logica usada, tente seguir o mesmo passo a passo implementando cada etapa, lembre de trocar os nomes.
+
+Fique atento a utilizacao da porta de do micro servico `inventory_service`, em vez de utilizar a porta 8000, iremos utilizar a porta 8001.
+
+no final do processo teremos um Dockerfile seguindo essa estrutura:
+
+```Dockerfile
+# Imagem base derivada do Python
+FROM python:3.12
+
+# Diretório de trabalho
+WORKDIR /app
+
+# Comando para copiar os arquivos para a pasta /app da imagem
+COPY . /app
+
+# Comando para instalar as dependências
+RUN pip install --no-cache-dir -r requirements.txt
+
+#Comando para expor uma porta disponivel no ambiente.
+EXPOSE 8001
+
+# Comando para inicializar (executar) a aplicação
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+```
+
+Para fazermos o Dockerfile do micro servico `frontend` usaremos comando diferentes, pois a maneira que rodamos o microservico usando um servidor nginx, uma solucao amplamente usada para subirmos aplicacoes web html, javascript e css.
+
+```Dockerfile
+# Use the official Nginx image as the base
+FROM nginx:alpine
+
+# Set the working directory to /usr/share/nginx/html
+WORKDIR /usr/share/nginx/html
+
+# Remove default nginx static files
+RUN rm -rf ./*
+
+# Copy your static website files into the container
+COPY . .
+
+# Expose port 80 to the outside world
+EXPOSE 5000
+
+# Start Nginx server
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+Ao final teremos os 3 Dockerfiles, cada um na raiz do seu respectivo diretorio, para subirmos todos os containewr em conjunto usaremos o docker compose para isso criaremos o arquivo `docker-compose.yml` na raiz do projeto.
+
+```bash
+touch docker-compose.yml
+```
+```Dockerfile
+version: '3.8'
+
+services:
+  inventory_service:
+    build:
+      context: ./services/inventory_service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    command: python manage.py runserver 0.0.0.0:8001
+
+  shipping_service:
+    build:
+      context: ./services/shipping_service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    command: python manage.py runserver 0.0.0.0:8000
+
+  frontend:
+    build:
+      context: ./services/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80" 
+```
+
+***descreva os comando seguindo os padroes anteriores***
+
+
+Agora comite as novos mudancas feitas
 
 
 ## Comentários Finais
