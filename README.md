@@ -71,7 +71,7 @@ A seguir vamos descrever a sequência de passos para você executar o sistema lo
     cd micro-livraria
     python -m venv venv
     source ven/bin/activate
-    pip install -r requirements
+    pip install -r requirements.txt
     ```
 
 5. Inicie os microsserviços através dos comandos abaixo:
@@ -96,7 +96,7 @@ A seguir vamos descrever a sequência de passos para você executar o sistema lo
 -   Se tiver o `curl` instalado na sua máquina, basta usar:
 
     ```bash
-    curl -i -X GET http://localhost:80001/api/products
+    curl -i -X GET http://localhost:8001/api/products
     ```
 
 -   Caso contrário, você pode fazer uma requisição acessando, no seu navegador, a seguinte URL: `http://localhost:8001/api/products`.
