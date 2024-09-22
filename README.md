@@ -13,8 +13,6 @@ Como nosso objetivo é didático, na livraria virtual estão à venda apenas tr�
 </p>
 
 
-![image](https://github.com/user-attachments/assets/9babb671-fa56-4d1f-b2e8-c86ec4e97d91)
-
 No restante deste documento vamos:
 
 -   Descrever o sistema, com foco na sua arquitetura.
