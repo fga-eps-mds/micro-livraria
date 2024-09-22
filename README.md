@@ -9,8 +9,11 @@ O objetivo da aula é permitir que o aluno tenha um primeiro contato com micross
 Como nosso objetivo é didático, na livraria virtual estão à venda apenas três livros, conforme pode ser visto na próxima figura, que mostra a interface Web do sistema. Além disso, a operação de compra apenas simula a ação do usuário, não efetuando mudanças no estoque. Assim, os clientes da livraria podem realizar apenas duas operações: (1) listar os produtos à venda; (2) calcular o frete de envio.
 
 <p align="center">
-    <img width="70%" src="https://user-images.githubusercontent.com/7620947/108773349-f68f3500-753c-11eb-8c4f-434ca9a9deec.png" />
+    <img width="70%" src="https://github.com/user-attachments/assets/9babb671-fa56-4d1f-b2e8-c86ec4e97d91" />
 </p>
+
+
+![image](https://github.com/user-attachments/assets/9babb671-fa56-4d1f-b2e8-c86ec4e97d91)
 
 No restante deste documento vamos:
 
