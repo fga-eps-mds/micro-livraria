@@ -1,6 +1,3 @@
-Este repositorio eh um fork do repositorio [micro-livraira](https://github.com/aserg-ufmg/micro-livraria) criado para modificar a estrutura de microservicos para uma api rest implementada em python.
-
-
 # Micro-Livraria: Exemplo Prático de Microsserviços
 
 Este repositório contem um exemplo simples de uma livraria virtual construída usando uma **arquitetura de microsserviços**.
@@ -22,6 +19,7 @@ No restante deste documento vamos:
 -   Descrever duas tarefas práticas para serem realizadas pelos alunos, as quais envolvem:
     -   Tarefa Prática #1: Implementação de uma nova operação em um dos microsserviços
     -   Tarefa Prática #2: Criação de containers Docker para facilitar a execução dos microsserviços.
+    -   Tarefa Extra: Criação de docker compose para facilitar o manuseio dos containers docker.
 
 ## Arquitetura
 
@@ -200,8 +198,6 @@ Caso você não tenha o Docker instaldo em sua máquina, é preciso instalá-lo 
 
 #### Passo 1
 
-
-
 Crie um arquivo chamado `Dockerfile` dentro da raiz da pasta do micro servico `shipping_service` com o comando:
 
 ```bash
@@ -229,8 +225,7 @@ No Dockerfile, você precisa incluir cinco instruções
 -   `EXPOSE`: comando para expor uma porta disponivel no ambiente.
 -   `CMD`: comando para executar o seu código quando o container for criado.
 
-Ou seja, nosso Dockerfile terá as seguintes linhas:
-
+Ou seja, nosso Dockerfile terá as seguintes linhas:  
 ```Dockerfile
 # Imagem base derivada do Python
 FROM python:3.12
@@ -248,7 +243,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8000
 
 # Comando para inicializar (executar) a aplicação
-CMD ["python", "manage.py", "runserver", "0.0.shiping"]
+CMD [python, manage.py, runserver, 0.0.0.0:8000]
 ```
 
 #### Passo 2
@@ -270,21 +265,22 @@ O `./` no final indica que estamos executando os comandos do Dockerfile tendo co
 
 #### Passo 3
 
-Lembra de quando inciamos os micro servicos com o comando:
+Lembra de quando inciamos os micro servicos com o comando abaixo?
 ```bash
   nohup python services/shipping_service/manage.py runserver &> iventory.log &
 ```
 
-Se executarmos o container que nos buildamos, ele tera conflito, pois teremos dois processos do computador tentando acessar a mesma porta. Para isso nao ocorrer, precisamos para o processo executando o comando:
+Se executarmos o container que nós construímos, ele terá conflito, pois teremos dois processos do computador tentando acessar a mesma porta. Para isso não ocorrer, precisamos parar o processo executando o comando:
 ```bash
   lsof -i 8000
 ```
-Este comando retornara o processo que usa a porta 8000, tendo uma saida similar a essa:
+Este comando retornará o processo que usa a porta 8000, tendo uma saída similar a esta:
+
 ```bash
 COMMAND   PID    USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
 python   12345   user   4u   IPv4 123456   0t0  TCP *:8000 (LISTEN)
 ```
-O PID, eh o id do processo, usamos o comando `kill` para acabar com o processo:
+O PID é o ID do processo. Usamos o comando `kill` para encerrar o processo:
 ```bash
   kill <PID>
 ```
@@ -292,10 +288,10 @@ nesse caso ficticio, a resposta do comando retorunou o procesos python de PID (i
 ```bash
   kill 12345
 ```
-Preste **MUITA** atencao ao usar o comando kill, caso voce coloque o PID errado, pode acabar matando processos bem importantes do seu sistema.
+Preste **MUITA** atenção ao usar o comando `kill`. Caso você coloque o PID errado, pode acabar encerrando processos muito importantes do seu sistema.
 
 
-Por fim, para executar a imagem criada no passo anterior (ou seja, colocar de novo o microsserviço de `Shipping` no ar), basta usar o comando:
+Por fim, para executar a imagem criada no passo anterior (ou seja, colocar novamente o microsserviço de Shipping no ar), basta usar o comando:
 
 ```
 docker run -ti --name shipping -p 8000:8000 micro-livraria/shipping
@@ -327,17 +323,16 @@ git push origin main
 
 ## Tarefa Pratica Extra
 
-Nesta tarefa extra iremos implementar uma comunicacao entre container dockers, um docker compose, que é uma ferramenta para definir e gerenciar múltiplos contêineres Docker em um único arquivo YAML, facilitando a configuração e o gerenciamento de aplicações que dependem de vários serviços. Você pode especificar a imagem, volumes, redes e variáveis de ambiente, permitindo iniciar todos os serviços com um único comando.
+Neste exercício extra, vamos implementar a comunicação entre contêineres Docker utilizando o Docker Compose. Essa ferramenta permite definir e gerenciar múltiplos contêineres em um único arquivo YAML, simplificando a configuração e o gerenciamento de aplicações que dependem de vários serviços. Com o Docker Compose, você pode especificar imagens, volumes, redes e variáveis de ambiente, possibilitando o início de todos os serviços com um único comando.
 
 
+Se você ainda não tiver o Docker Compose instalado em sua máquina, pode fazê-lo seguindo as instruções na [documentação oficial](https://docs.docker.com/compose/install/).
 
-caso voce nao tenha o docker compose instalado na sua maquina, ele pode ser instalado atraves da [documentação oficial](https://docs.docker.com/compose/install/).
+Repita a `tarefa prática dois` com o microserviço `inventory_service`.
 
-repita a `tarefa pratica dois` com o micro servico `inventory_service`:
+Com base na lógica utilizada, tente seguir o mesmo passo a passo implementando cada etapa. Lembre-se de alterar os nomes conforme necessário.
 
-Com base na logica usada, tente seguir o mesmo passo a passo implementando cada etapa, lembre de trocar os nomes.
-
-Fique atento a utilizacao da porta de do micro servico `inventory_service`, em vez de utilizar a porta 8000, iremos utilizar a porta 8001.
+Fique atento à utilização da porta para microserviço `inventory_service`. Em vez de usar a porta 8000, utilizaremos a porta `8001`.
 
 no final do processo teremos um Dockerfile seguindo essa estrutura:
 
@@ -361,8 +356,7 @@ EXPOSE 8001
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
 ```
 
-Para fazermos o Dockerfile do micro servico `frontend` usaremos comando diferentes, pois a maneira que rodamos o microservico usando um servidor nginx, uma solucao amplamente usada para subirmos aplicacoes web html, javascript e css.
-
+Para criar o Dockerfile do microserviço `frontend`, utilizaremos comandos diferentes, pois a execução desse microserviço se dá por meio de um servidor Nginx, uma solução amplamente utilizada para hospedar aplicações web em HTML, JavaScript e CSS.
 
 
 - `FROM`: usa a imagem oficial do Nginx como base, especificamente a versão leve (alpine), que é otimizada para ser menor e mais rápida.
@@ -373,40 +367,37 @@ Para fazermos o Dockerfile do micro servico `frontend` usaremos comando diferent
 - `CMD`: inicia o servidor Nginx em primeiro plano (daemon off), o que é essencial para que o container permaneça ativo e escutando requisições. Sem isso, o container encerraria imediatamente após a execução.
 
 ```Dockerfile
-# Use the official Nginx image as the base
+# Use a imagem oficial do Nginx como base
 FROM nginx:alpine
 
-# Set the working directory to /usr/share/nginx/html
+# Defina o diretório de trabalho como /usr/share/nginx/html
 WORKDIR /usr/share/nginx/html
 
-# Remove default nginx static files
+# Remova os arquivos estáticos padrão do nginx
 RUN rm -rf ./*
 
-# Copy your static website files into the container
+# Copie seus arquivos estáticos do site para dentro do contêiner
 COPY . .
 
-# Expose port 80 to the outside world
+# Exponha a porta 80 para o mundo exterior
 EXPOSE 5000
 
 # Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-Ao final teremos os 3 Dockerfiles, cada um na raiz do seu respectivo diretorio, para subirmos todos os containewr em conjunto usaremos o docker compose para isso criaremos o arquivo `docker-compose.yml` na raiz do projeto.
-
+Ao final, teremos os três Dockerfiles, cada um na raiz de seu respectivo diretório. Para subir todos os contêineres em conjunto, usaremos o Docker Compose. Para isso, criaremos o arquivo `docker-compose.yml` na raiz do projeto.
 ```bash
 touch docker-compose.yml
 ```
+No docker-compose.yml, você precisa incluir várias chaves e suas respectivas configurações:  
 
-No docker-compose.yml, você precisa incluir várias chaves e suas respectivas configurações:
-
-services: define os serviços que compõem sua aplicação, permitindo agrupar diferentes componentes, como frontend e backend, em containers separados.  
-
+- `services`: define os serviços que compõem sua aplicação, permitindo agrupar diferentes componentes, como frontend e backend, em containers separados.    
 - `build`: especifica como construir a imagem Docker para um serviço, contendo configurações para o contexto e o arquivo Dockerfile.  
-- `context`: determina o diretório que contém o Dockerfile e os arquivos necessários para a construção da imagem, devendo ser relativo ao local do arquivo docker-compose.yml.  
+- `context`: determina o diretório que contém o Dockerfile e os arquivos necessários para a construção da imagem, devendo ser relativo ao local do arquivo docker-compose.yml.   
 - `dockerfile`: indica o nome do arquivo Dockerfile a ser utilizado na construção da imagem; por padrão, o Docker procura um arquivo chamado Dockerfile, mas você pode definir um nome diferente.  
-- `ports`: mapeia as portas do host para as portas do container, permitindo acesso aos serviços, no formato <porta_host>:<porta_container>.  
-- `command`: define o comando a ser executado quando o container é iniciado, personalizando o que acontece ao inicializar o serviço, como iniciar um servidor ou executar um script.  
+- `ports`: mapeia as portas do host para as portas do container, permitindo acesso aos serviços, no formato <porta_host>:<porta_container>.    
+- `command`: define o comando a ser executado quando o container é iniciado, personalizando o que acontece ao inicializar o serviço, como iniciar um servidor ou executar um script.    
 
 Teremos um Dockerfile seguindo essa estrutura:  
 
@@ -439,7 +430,8 @@ services:  # Início da definição dos serviços
       - "5000:80"  # Mapeia a porta 5000 do host para a porta 80 do container
 ```
 
-O projeto estara com essa estrutura:  
+
+O projeto estará com esta estrutura:
 
 micro-livraria  
 │  
@@ -493,7 +485,11 @@ micro-livraria
 
 verifique se a estrura esta a mesma do seu projeto, o comando `tree` pode te ajudar nisso!  (para instalar rode o comando `sudo apt install tree` e depois rode `tree`)  
 
-Agora comite as novos mudancas feitas seguindo os comandos que voce ja conhece!  
+Verifique se a estrutura está a mesma do seu projeto. O comando `tree` pode te ajudar nisso!   
+
+(Para instalá-lo, rode o comando `sudo apt install tree` e, em seguida, execute `tree`.)
+
+Agora, comite as novas mudanças feitas seguindo os comandos que você já conhece!
 
 ## Comentários Finais
 
