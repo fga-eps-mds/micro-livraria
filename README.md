@@ -401,7 +401,7 @@ No docker-compose.yml, você precisa incluir várias chaves e suas respectivas c
 
 Teremos um Dockerfile seguindo essa estrutura:  
 
-```Dockerfile
+```yaml
 version: '3.8'  # Define a versão do Docker Compose a ser utilizada
 
 services:  # Início da definição dos serviços
