@@ -1,3 +1,6 @@
+Este repositorio eh um fork do repositorio [micro-livraira](https://github.com/aserg-ufmg/micro-livraria) criado por doscentes e discentes da UFMG e adaptado por Doscentes e discentes da UnB, viva ao mundo de software livre!
+
+
 # Micro-Livraria: Exemplo Prático de Microsserviços
 
 Este repositório contem um exemplo simples de uma livraria virtual construída usando uma **arquitetura de microsserviços**.
@@ -427,76 +430,61 @@ services:  # Início da definição dos serviços
       - "5000:80"  # Mapeia a porta 5000 do host para a porta 80 do container
 ```
 
-O projeto estara com essa estrutura:
+O projeto estara com essa estrutura:  
 
-micro-livraria
-│  
-├── docker-compose.yml
-├── LICENSE
-├── README.md
-└── services
-    ├── frontend
-    │   ├── Dockerfile
-    │   ├── img
-    │   │   ├── design.png
-    │   │   ├── esm.png
-    │   │   └── refactoring.png
-    │   ├── index.css
-    │   ├── index.html
-    │   └── index.js
-    ├── inventory_service
-    │   ├── Dockerfile
-    │   ├── inventory
-    │   │   ├── __init__.py
-    │   │   ├── __pycache__
-    │   │   │   ├── admin.cpython-312.pyc
-    │   │   │   ├── apps.cpython-312.pyc
-    │   │   │   ├── __init__.cpython-312.pyc
-    │   │   │   ├── models.cpython-312.pyc
-    │   │   │   ├── serializers.cpython-312.pyc
-    │   │   │   ├── urls.cpython-312.pyc
-    │   │   │   └── views.cpython-312.pyc
-    │   │   ├── tests.py
-    │   │   ├── urls.py
-    │   │   └── views.py
-    │   ├── inventory_service
-    │   │   ├── __init__.py
-    │   │   ├── settings.py
-    │   │   └── urls.py
-    │   ├── manage.py
-    │   ├── products.json
-    │   └── requirements.txt
-    └── shipping_service
-        ├── Dockerfile
-        ├── manage.py
-        ├── requirements.txt
-        ├── shipping
-        │   ├── __init__.py
-        │   ├── __pycache__
-        │   │   ├── admin.cpython-312.pyc
-        │   │   ├── apps.cpython-312.pyc
-        │   │   ├── __init__.cpython-312.pyc
-        │   │   ├── models.cpython-312.pyc
-        │   │   ├── urls.cpython-312.pyc
-        │   │   └── views.cpython-312.pyc
-        │   ├── tests.py
-        │   ├── urls.py
-        │   └── views.py
-        └── shipping_service
-            ├── __init__.py
-            ├── __pycache__
-            │   ├── __init__.cpython-312.pyc
-            │   ├── settings.cpython-312.pyc
-            │   ├── urls.cpython-312.pyc
-            │   └── wsgi.cpython-312.pyc
-            ├── settings.py
-            └── urls.py
+micro-livraria  
+│    
+├── docker-compose.yml  
+├── LICENSE  
+├── README.md  
+└── services  
+    ├── frontend  
+    │   ├── Dockerfile  
+    │   ├── img  
+    │   │   ├── design.png  
+    │   │   ├── esm.png  
+    │   │   └── refactoring.png  
+    │   ├── index.css  
+    │   ├── index.html  
+    │   └── index.js  
+    ├── inventory_service  
+    │   ├── Dockerfile  
+    │   ├── inventory  
+    │   │   ├── __init__.py  
+    │   │   ├── __pycache__  
+    │   │   │   └── nao se preocupe com os arquivos dentro desse diretorio  
+    │   │   ├── tests.py  
+    │   │   ├── urls.py    
+    │   │   └── views.py  
+    │   ├── inventory_service  
+    │   │   ├── __init__.py  
+    │   │   ├── settings.py  
+    │   │   └── urls.py  
+    │   ├── manage.py  
+    │   ├── products.json  
+    │   └── requirements.txt  
+    └── shipping_service  
+        ├── Dockerfile  
+        ├── manage.py  
+        ├── requirements.txt  
+        ├── shipping  
+        │   ├── __init__.py  
+        │   ├── __pycache__  
+        │   │   └── nao se preocupe com os arquivos dentro desse diretorio    
+        │   ├── tests.py  
+        │   ├── urls.py  
+        │   └── views.py  
+        └── shipping_service  
+            ├── __init__.py  
+            ├── __pycache__  
+            │   └── nao se preocupe com os arquivos dentro desse diretorio    
+            ├── settings.py    
+            └── urls.py    
+12 directories, 48 files  
 
-12 directories, 48 files
+verifique se a estrura esta a mesma do seu projeto, o comando `tree` pode te ajudar nisso!  (para instalar rode o comando `sudo apt install tree` e depois rode `tree`)  
 
-verifique se a estrura esta a mesma do seu projeto, o comando `tree` pode te ajudar nisso!  (para instalar rode o comando `sudo apt install tree` e depois rode `tree`)
-
-Agora comite as novos mudancas feitas seguindo os comandos que voce ja conhece!
+Agora comite as novos mudancas feitas seguindo os comandos que voce ja conhece!  
 
 ## Comentários Finais
 
