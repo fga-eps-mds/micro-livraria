@@ -9,9 +9,8 @@ O objetivo da aula é permitir que o aluno tenha um primeiro contato com micross
 Como nosso objetivo é didático, na livraria virtual estão à venda apenas três livros, conforme pode ser visto na próxima figura, que mostra a interface Web do sistema. Além disso, a operação de compra apenas simula a ação do usuário, não efetuando mudanças no estoque. Assim, os clientes da livraria podem realizar apenas duas operações: (1) listar os produtos à venda; (2) calcular o frete de envio.
 
 <p align="center">
-    <img width="70%" src="https://github.com/user-attachments/assets/9babb671-fa56-4d1f-b2e8-c86ec4e97d91" />
+    <img width="70%" src="https://user-images.githubusercontent.com/7620947/108773349-f68f3500-753c-11eb-8c4f-434ca9a9deec.png" />
 </p>
-
 
 No restante deste documento vamos:
 
@@ -45,7 +44,7 @@ O protocolo utilizado para essa comunicação é HTTP/HTTPS, garantindo uma troc
 Optamos por usar HTTP/HTTPS no back-end para a comunicação entre os serviços, pois, além de ser amplamente suportado, é uma solução consolidada e simples para o desenvolvimento de APIs REST. A comunicação entre os microsserviços acontece por meio de chamadas HTTP, em que as requisições são feitas com métodos como `GET`, `POST`, `PUT` e `DELETE`, e os dados são geralmente trocados no formato JSON.
 
 <p align="center">
-    <img width="70%" src="https://private-user-images.githubusercontent.com/65179736/369716963-6f453006-823d-4c16-90b9-e0f76074b811.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MjcwMzg1NzQsIm5iZiI6MTcyNzAzODI3NCwicGF0aCI6Ii82NTE3OTczNi8zNjk3MTY5NjMtNmY0NTMwMDYtODIzZC00YzE2LTkwYjktZTBmNzYwNzRiODExLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDA5MjIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwOTIyVDIwNTExNFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWM4MDRjYTViOGYzNDc3MmZlYWJhZTQzYTAzZWMxZjRiZjQwMjM1MmY5NzE2MTQzYjkwNTE1ODVmNzk3ZTI3YmEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.6HJMVtoIhl-AWl7L6aAkTJSeKlhMCN4203bdNHYMcbg"/>
+    <img width="70%" src="https://github.com/user-attachments/assets/9babb671-fa56-4d1f-b2e8-c86ec4e97d91" />
 </p>
 
 A escolha por HTTP/HTTPS para a implementação da API REST se deu pela simplicidade e facilidade de integração entre os microsserviços, mantendo a eficiência na comunicação e a compatibilidade com diversas ferramentas e plataformas. Embora gRPC ofereça benefícios como maior desempenho em alguns cenários, o uso de HTTP/HTTPS é mais que suficiente para as necessidades da nossa aplicação.
