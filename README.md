@@ -453,7 +453,7 @@ micro-livraria
     │   ├── inventory  
     │   │   ├── __init__.py  
     │   │   ├── __pycache__  
-    │   │   │   └── nao se preocupe com os arquivos dentro desse diretorio  
+    │   │   │   └── arquivos de compilação
     │   │   ├── tests.py  
     │   │   ├── urls.py  
     │   │   └── views.py  
@@ -471,14 +471,14 @@ micro-livraria
         ├── shipping  
         │   ├── __init__.py  
         │   ├── __pycache__  
-        │   │   └── nao se preocupe com os arquivos dentro desse diretorio  
+        │   │   └── 
         │   ├── tests.py  
         │   ├── urls.py  
         │   └── views.py  
         └── shipping_service  
             ├── __init__.py  
             ├── __pycache__  
-            │   └── nao se preocupe com os arquivos dentro desse diretorio    
+            │   └── arquivos de compilação
             ├── settings.py  
             └── urls.py  
 12 directories, 48 files  
